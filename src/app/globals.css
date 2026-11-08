@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #101010;
+}
+
+.dark {
+  --background: #0C0F14;
+  --foreground: #F7F6F2;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Japanese & Kawaii Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E4E4E7;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272A;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D90016;
+}
+
+/* Furigana Ruby Text Styling */
+ruby {
+  ruby-align: center;
+}
+
+rt {
+  font-size: 0.55em;
+  color: #D90016;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.dark .glass-card {
+  background: rgba(18, 20, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.8);
+}
