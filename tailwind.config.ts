@@ -44,10 +44,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
+        sans: ["var(--font-inter)", "var(--font-bensen)", "BenSen", "var(--font-noto-sans-jp)", "sans-serif"],
         japanese: ["var(--font-noto-sans-jp)", "sans-serif"],
         mincho: ["var(--font-shippori-mincho)", "serif"],
-        bangla: ["var(--font-hind-siliguri)", "sans-serif"],
+        bangla: ["var(--font-bensen)", "BenSen", "sans-serif"],
       },
       borderRadius: {
         "2xl": "1rem",

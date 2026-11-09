@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { inter, notoSansJP, shipporiMincho, hindSiliguri } from "@/lib/fonts";
+import { inter, notoSansJP, shipporiMincho, benSen } from "@/lib/fonts";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -40,7 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${notoSansJP.variable} ${shipporiMincho.variable} ${hindSiliguri.variable}`}
+      className={`${inter.variable} ${notoSansJP.variable} ${shipporiMincho.variable} ${benSen.variable}`}
     >
       <head>
         {/* Anti-FOUC theme detector script */}

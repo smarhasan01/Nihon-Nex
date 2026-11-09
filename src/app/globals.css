@@ -16,18 +16,30 @@
   --surface-border: #222938;
 }
 
+@font-face {
+  font-family: 'BenSen';
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('/fonts/bensen/bensen.woff2') format('woff2'),
+       url('/fonts/bensen/bensen.ttf') format('truetype');
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-inter), var(--font-bensen), 'BenSen', var(--font-noto-sans-jp), sans-serif;
   overflow-x: hidden;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Hind Siliguri Bangla Typography Enhancements */
-.font-bangla {
-  font-family: var(--font-hind-siliguri), sans-serif;
-  line-height: 1.6;
+/* BenSen Bangla Typography Enhancements */
+.font-bangla,
+:lang(bn),
+[lang="bn"] {
+  font-family: var(--font-bensen), 'BenSen', sans-serif;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
   font-feature-settings: "kern" 1;
 }
 

@@ -132,12 +132,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem("nihon_nex_lang") as Language;
     if (saved && (saved === "en" || saved === "bn")) {
       setLanguageState(saved);
+      document.documentElement.lang = saved;
+    } else {
+      document.documentElement.lang = "bn";
     }
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem("nihon_nex_lang", lang);
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+    }
   };
 
   const t = (key: string): string => {

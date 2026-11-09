@@ -1,4 +1,5 @@
-import { Inter, Noto_Sans_JP, Shippori_Mincho, Hind_Siliguri } from "next/font/google";
+import localFont from "next/font/local";
+import { Inter, Noto_Sans_JP, Shippori_Mincho } from "next/font/google";
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -20,9 +21,13 @@ export const shipporiMincho = Shippori_Mincho({
   display: "swap",
 });
 
-export const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-hind-siliguri",
+export const benSen = localFont({
+  src: [
+    {
+      path: "../../public/fonts/bensen/bensen.woff2",
+      style: "normal",
+    },
+  ],
+  variable: "--font-bensen",
   display: "swap",
 });
