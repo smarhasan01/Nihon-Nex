@@ -16,14 +16,27 @@ export interface KanaCharacter {
   };
 }
 
+export type VocabularyCategory =
+  | "daily"
+  | "greetings"
+  | "numbers"
+  | "family"
+  | "food"
+  | "travel"
+  | "education"
+  | "business"
+  | "verbs"
+  | "adjectives";
+
 export interface VocabularyItem {
   id: string;
   japanese: string;
   reading: string;
+  kanji?: string;
   romaji: string;
   meaningEn: string;
   meaningBn: string;
-  category: "greetings" | "numbers" | "daily" | "food" | "family" | "travel";
+  category: VocabularyCategory;
   jlptLevel: "N5" | "N4" | "N3" | "N2" | "N1";
   exampleSentenceJp: string;
   exampleSentenceEn: string;

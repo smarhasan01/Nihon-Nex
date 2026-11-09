@@ -4,12 +4,16 @@
 
 :root {
   --background: #FFFFFF;
-  --foreground: #101010;
+  --foreground: #111827;
+  --surface: #F9FAFB;
+  --surface-border: #E5E7EB;
 }
 
 .dark {
-  --background: #0C0F14;
-  --foreground: #F7F6F2;
+  --background: #0B0E14;
+  --foreground: #F3F4F6;
+  --surface: #121622;
+  --surface-border: #222938;
 }
 
 body {
@@ -17,12 +21,30 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Japanese & Kawaii Scrollbar */
+/* Hind Siliguri Bangla Typography Enhancements */
+.font-bangla {
+  font-family: var(--font-hind-siliguri), sans-serif;
+  line-height: 1.6;
+  font-feature-settings: "kern" 1;
+}
+
+/* Japanese Typography Enhancements */
+.font-japanese {
+  font-family: var(--font-noto-sans-jp), sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.font-mincho {
+  font-family: var(--font-shippori-mincho), serif;
+}
+
+/* Custom Japanese Editorial Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -30,12 +52,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E4E4E7;
+  background: #D1D5DB;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #27272A;
+  background: #2D3748;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -48,21 +70,20 @@ ruby {
 }
 
 rt {
-  font-size: 0.55em;
+  font-size: 0.58em;
   color: #D90016;
   font-weight: 600;
   user-select: none;
 }
 
-/* Glassmorphism Cards */
-.glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(229, 231, 235, 0.8);
+/* Clean Cards & Surfaces */
+.saas-card {
+  background-color: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
 }
 
-.dark .glass-card {
-  background: rgba(18, 20, 26, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(39, 39, 42, 0.8);
+.dark .saas-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }

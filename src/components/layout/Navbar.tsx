@@ -1,241 +1,364 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Flame,
-  Heart,
   Zap,
   Globe,
   Menu,
   X,
-  BookOpen,
-  Sparkles,
-  Trophy,
+  ChevronDown,
   User,
   LogOut,
   Moon,
   Sun,
-  LayoutDashboard
+  LayoutDashboard,
+  BookOpen,
+  Headphones,
+  Mic,
+  GraduationCap,
+  Sparkles,
+  Trophy,
+  Bookmark
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGamification } from "@/context/GamificationContext";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { sound } from "@/lib/sound";
 
 export function Navbar() {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
-  const { streak, hearts, xp, replenishHearts } = useGamification();
+  const { streak, xp } = useGamification();
   const { user, signOut, enterDemoMode } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setLearnDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleLanguage = () => {
     sound.playClick();
     setLanguage(language === "en" ? "bn" : "en");
   };
 
-  const toggleTheme = () => {
-    sound.playClick();
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.remove("dark");
-      setIsDark(false);
-    } else {
-      root.classList.add("dark");
-      setIsDark(true);
-    }
-  };
-
-  const navLinks = [
-    { href: "/", label: t("nav.home") },
-    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
-    { href: "/learn/hiragana", label: t("nav.hiragana") },
-    { href: "/learn/katakana", label: t("nav.katakana") },
-    { href: "/learn/vocabulary", label: t("nav.vocabulary") },
-    { href: "/learn/grammar", label: t("nav.grammar") },
-    { href: "/learn/kanji", label: t("nav.kanji") },
-    { href: "/jlpt", label: t("nav.jlpt") },
-    { href: "/quiz", label: t("nav.quizzes"), badge: "XP" },
+  const learnSubItems = [
+    { href: "/learn/hiragana", label: "Hiragana (ひらがな)", desc: "46 foundational phonetic characters", icon: "あ" },
+    { href: "/learn/katakana", label: "Katakana (カタカナ)", desc: "46 loanword characters", icon: "カ" },
+    { href: "/learn/grammar", label: "Grammar (文法)", desc: "Sentence patterns & particles in Bangla", icon: "⛩️" },
+    { href: "/learn/kanji", label: "Essential Kanji (漢字)", desc: "Joyo ideograms & readings", icon: "日" },
+    { href: "/learn/listening", label: "Listening (聴解)", desc: "Audio dialogue practice", icon: "🎧" },
+    { href: "/learn/speaking", label: "Speaking (会話)", desc: "Pronunciation & accent drills", icon: "🎙️" },
   ];
 
+  const isLearnActive = pathname.startsWith("/learn") && pathname !== "/learn/vocabulary";
+
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800 transition-colors">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0B0E14]/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
           href="/"
           onClick={() => sound.playClick()}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-2.5 group flex-shrink-0"
         >
-          {/* Brand Seal Icon */}
-          <div className="w-10 h-10 rounded-2xl bg-brand-red flex items-center justify-center text-white shadow-sakura group-hover:scale-105 transition-transform duration-200">
-            <span className="font-mincho text-xl font-bold">日</span>
+          <div className="w-9 h-9 rounded-xl bg-brand-red flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+            <span className="font-mincho text-lg font-bold">日</span>
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="text-xl font-black tracking-tight text-zinc-900 dark:text-white font-sans">
+              <span className="text-lg font-black tracking-tight text-zinc-900 dark:text-white font-sans">
                 NIHON<span className="text-brand-red">NEX</span>
               </span>
-              <span className="text-xs px-1.5 py-0.5 rounded-full bg-brand-sakura-100 dark:bg-rose-950 text-brand-red text-[10px] font-semibold">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-brand-sakura-100 dark:bg-rose-950/60 text-brand-red font-semibold">
                 日本
               </span>
             </div>
-            <span className="text-[10px] text-zinc-500 font-medium tracking-wide">
-              Learn Japanese • Unlock Japan
-            </span>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => sound.playClick()}
-                className={`relative px-3 py-1.5 text-xs font-semibold rounded-xl transition-all duration-150 ${
-                  isActive
-                    ? "text-brand-red bg-brand-sakura-50 dark:bg-rose-950/40"
-                    : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                }`}
-              >
-                {link.label}
-                {link.badge && (
-                  <span className="ml-1 px-1.5 py-0.2 text-[9px] rounded-full bg-brand-red text-white font-bold animate-pulse">
-                    {link.badge}
-                  </span>
-                )}
-                {isActive && (
-                  <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-red rounded-full" />
-                )}
-              </Link>
-            );
-          })}
+        {/* Streamlined Desktop Navigation (5 Core Items) */}
+        <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          {/* 1. Home */}
+          <Link
+            href="/"
+            onClick={() => sound.playClick()}
+            className={`px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-xl transition-all ${
+              pathname === "/"
+                ? "text-brand-red bg-rose-50 dark:bg-rose-950/40"
+                : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+            }`}
+          >
+            {t("nav.home")}
+          </Link>
+
+          {/* 2. Learn Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => {
+                sound.playClick();
+                setLearnDropdownOpen(!learnDropdownOpen);
+              }}
+              className={`flex items-center gap-1 px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-xl transition-all ${
+                isLearnActive
+                  ? "text-brand-red bg-rose-50 dark:bg-rose-950/40"
+                  : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+              }`}
+            >
+              <span>{t("nav.learn")}</span>
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-200 ${learnDropdownOpen ? "rotate-180 text-brand-red" : ""}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {learnDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-[#121622] rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 space-y-1 animate-fade-in z-50">
+                {learnSubItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => {
+                      sound.playClick();
+                      setLearnDropdownOpen(false);
+                    }}
+                    className={`flex items-start gap-3 p-2.5 rounded-xl transition-colors ${
+                      pathname === item.href
+                        ? "bg-rose-50 dark:bg-rose-950/40 text-brand-red"
+                        : "hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-800 dark:text-zinc-200"
+                    }`}
+                  >
+                    <span className="text-base font-bold w-6 text-center">{item.icon}</span>
+                    <div>
+                      <p className="text-xs font-bold leading-none">{item.label}</p>
+                      <p className="text-[11px] text-zinc-400 mt-1">{item.desc}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 3. Vocabulary */}
+          <Link
+            href="/learn/vocabulary"
+            onClick={() => sound.playClick()}
+            className={`px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-xl transition-all ${
+              pathname === "/learn/vocabulary"
+                ? "text-brand-red bg-rose-50 dark:bg-rose-950/40"
+                : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+            }`}
+          >
+            {t("nav.vocabulary")}
+          </Link>
+
+          {/* 4. JLPT */}
+          <Link
+            href="/jlpt"
+            onClick={() => sound.playClick()}
+            className={`px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-xl transition-all ${
+              pathname === "/jlpt"
+                ? "text-brand-red bg-rose-50 dark:bg-rose-950/40"
+                : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+            }`}
+          >
+            {t("nav.jlpt")}
+          </Link>
+
+          {/* 5. Practice (Quiz) */}
+          <Link
+            href="/quiz"
+            onClick={() => sound.playClick()}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm font-semibold rounded-xl transition-all ${
+              pathname === "/quiz"
+                ? "text-brand-red bg-rose-50 dark:bg-rose-950/40"
+                : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+            }`}
+          >
+            <span>Practice</span>
+            <span className="px-1.5 py-0.2 text-[9px] rounded-full bg-brand-red text-white font-bold">
+              Quiz
+            </span>
+          </Link>
         </nav>
 
-        {/* Right Action Counters & Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Hearts Counter */}
-          <button
-            onClick={() => {
-              if (hearts < 5) replenishHearts();
-            }}
-            title={hearts < 5 ? "Click to replenish hearts!" : "Full lives!"}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 text-xs font-bold transition-transform active:scale-95"
-          >
-            <Heart size={15} className="fill-rose-500 text-rose-500" />
-            <span>{hearts}</span>
-          </button>
-
-          {/* Streak Counter */}
-          <div
-            title={`${streak} day streak! Keep it going!`}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-600 dark:text-amber-400 text-xs font-bold"
-          >
-            <Flame size={15} className="fill-amber-500 text-amber-500 animate-pulse" />
-            <span>{streak}</span>
+        {/* Right Section: Compact Stats, Language, Theme & Auth */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Streak & XP Pill */}
+          <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold">
+            <span className="flex items-center gap-1 text-amber-500" title={`${streak} day streak`}>
+              <Flame size={14} className="fill-amber-500" />
+              <span>{streak}</span>
+            </span>
+            <span className="text-zinc-300 dark:text-zinc-700">|</span>
+            <span className="flex items-center gap-1 text-blue-500" title={`${xp} Total XP`}>
+              <Zap size={13} className="fill-blue-500" />
+              <span>{xp}</span>
+            </span>
           </div>
 
-          {/* XP Counter */}
-          <div
-            title={`${xp} Total Experience Points`}
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 text-xs font-bold"
-          >
-            <Zap size={14} className="fill-blue-500 text-blue-500" />
-            <span>{xp} XP</span>
-          </div>
-
-          {/* Language Switcher (EN / BN) */}
+          {/* Language Switcher */}
           <button
             onClick={toggleLanguage}
             title="Switch Language (English / বাংলা)"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:border-brand-red transition-all"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:border-brand-red transition-all"
           >
-            <Globe size={14} className="text-brand-red" />
-            <span>{language === "en" ? "বাংলা" : "English"}</span>
+            <Globe size={13} className="text-brand-red" />
+            <span className="font-bangla">{language === "en" ? "বাংলা" : "EN"}</span>
           </button>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle (Connected to ThemeContext) */}
           <button
-            onClick={toggleTheme}
-            title="Toggle Light/Dark Theme"
-            className="p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+            onClick={() => {
+              sound.playClick();
+              toggleTheme();
+            }}
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle theme"
+            className="p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* User Auth or Demo Mode Button */}
+          {/* User Auth or Dashboard / Demo Button */}
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Link
                 href="/dashboard"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-bold hover:opacity-90"
+                onClick={() => sound.playClick()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-xs font-bold hover:opacity-90 shadow-sm"
               >
-                <User size={13} />
-                <span className="hidden md:inline max-w-[80px] truncate">{user.name}</span>
+                <LayoutDashboard size={13} />
+                <span className="hidden lg:inline">{t("nav.dashboard")}</span>
               </Link>
               <button
                 onClick={() => signOut()}
                 title="Log Out"
                 className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
               >
-                <LogOut size={15} />
+                <LogOut size={14} />
               </button>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => enterDemoMode("student")}
-                className="hidden sm:inline-flex px-3 py-1.5 text-xs font-bold text-brand-red bg-brand-sakura-100 dark:bg-rose-950/60 rounded-xl hover:bg-brand-sakura-200 transition-colors"
+                className="hidden sm:inline-flex px-2.5 py-1.5 text-xs font-bold text-brand-red bg-rose-50 dark:bg-rose-950/60 rounded-xl hover:bg-rose-100 transition-colors"
               >
                 Demo
               </button>
               <Link
                 href="/auth/login"
-                className="px-3.5 py-1.5 text-xs font-bold text-white bg-brand-red hover:bg-brand-red-hover rounded-xl shadow-sakura transition-all"
+                className="px-3 py-1.5 text-xs font-bold text-white bg-brand-red hover:bg-brand-red-hover rounded-xl shadow-sm transition-all"
               >
                 {t("nav.login")}
               </Link>
             </div>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Drawer Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
-            aria-label="Toggle mobile menu"
+            className="md:hidden p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
+            aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 pt-3 pb-6 space-y-1.5">
-          {navLinks.map((link) => (
+        <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0B0E14] px-4 pt-3 pb-6 space-y-3 animate-fade-in">
+          <div className="grid grid-cols-2 gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800 text-xs font-bold">
             <Link
-              key={link.href}
-              href={link.href}
+              href="/"
               onClick={() => {
                 sound.playClick();
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-brand-sakura-50 dark:hover:bg-zinc-900"
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-center"
             >
-              <span>{link.label}</span>
-              {link.badge && (
-                <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-brand-red text-white">
-                  {link.badge}
-                </span>
-              )}
+              Home
             </Link>
-          ))}
+            <Link
+              href="/dashboard"
+              onClick={() => {
+                sound.playClick();
+                setMobileMenuOpen(false);
+              }}
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-center"
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/learn/vocabulary"
+              onClick={() => {
+                sound.playClick();
+                setMobileMenuOpen(false);
+              }}
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-center text-brand-red font-bold"
+            >
+              Vocabulary Bank
+            </Link>
+            <Link
+              href="/jlpt"
+              onClick={() => {
+                sound.playClick();
+                setMobileMenuOpen(false);
+              }}
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-center"
+            >
+              JLPT Roadmaps
+            </Link>
+            <Link
+              href="/quiz"
+              onClick={() => {
+                sound.playClick();
+                setMobileMenuOpen(false);
+              }}
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-center col-span-2"
+            >
+              Interactive Practice Quizzes
+            </Link>
+          </div>
+
+          <div>
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+              Learn Modules:
+            </p>
+            <div className="space-y-1">
+              {learnSubItems.map((sub) => (
+                <Link
+                  key={sub.href}
+                  href={sub.href}
+                  onClick={() => {
+                    sound.playClick();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <span className="w-5 text-center">{sub.icon}</span>
+                  <span>{sub.label}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </header>
